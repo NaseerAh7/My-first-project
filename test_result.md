@@ -101,6 +101,9 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+##
+##   - agent: "main"
+##     message: "Fixed backend email validation: ContactSubmissionCreate.email now uses EmailStr; invalid emails should return 422. Please re-test backend endpoints."
 
 ## user_problem_statement: "Modern personal portfolio website + backend contact submissions"
 ## backend:
