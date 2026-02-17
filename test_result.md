@@ -105,7 +105,7 @@
 ## user_problem_statement: "Modern personal portfolio website + backend contact submissions"
 ## backend:
 ##   - task: "POST /api/contact create submission"
-##     implemented: false
+##     implemented: true
 ##     working: "NA"
 ##     file: "/app/backend/server.py"
 ##     stuck_count: 0
