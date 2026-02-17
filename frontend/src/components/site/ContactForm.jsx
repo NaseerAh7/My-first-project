@@ -22,6 +22,8 @@ const schema = z.object({
 
 export default function ContactForm({ ownerEmail }) {
   const [lastSubmissions, setLastSubmissions] = useState([]);
+  const [adminKey, setAdminKey] = useState("");
+  const [adminLoading, setAdminLoading] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(schema),
