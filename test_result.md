@@ -106,26 +106,32 @@
 ## backend:
 ##   - task: "POST /api/contact create submission"
 ##     implemented: true
-##     working: "NA"
+##     working: false
 ##     file: "/app/backend/server.py"
 ##     stuck_count: 0
 ##     priority: "high"
-##     needs_retesting: true
+##     needs_retesting: false
 ##     status_history:
 ##       - working: "NA"
 ##         agent: "main"
 ##         comment: "Planned: store contact submissions in MongoDB, return created submission. Contracts written in /app/contracts.md."
+##       - working: false
+##         agent: "testing"
+##         comment: "CRITICAL ISSUE: Email validation not implemented. API accepts invalid email formats (e.g., 'invalid-email-format') and returns 201 instead of 422. All other functionality works: valid submissions return 201 with correct fields (id, name, email, message, created_at), missing field validation works correctly (returns 422), data persistence to MongoDB working."
 ##   - task: "GET /api/contact/recent admin recent submissions"
 ##     implemented: true
-##     working: "NA"
+##     working: true
 ##     file: "/app/backend/server.py"
 ##     stuck_count: 0
 ##     priority: "high"
-##     needs_retesting: true
+##     needs_retesting: false
 ##     status_history:
 ##       - working: "NA"
 ##         agent: "main"
 ##         comment: "Planned: protect with x-admin-key header against ADMIN_API_KEY in backend/.env, return recent submissions sorted by created_at desc."
+##       - working: true
+##         agent: "testing"
+##         comment: "All functionality working correctly: No auth header returns 401, wrong x-admin-key returns 401, correct x-admin-key (naseer_admin_2026_key) returns 200 with array sorted by created_at desc, limit bounds working (limit=1 returns 1 item, limit=999 caps at 100, tested with 2 existing items)."
 ## frontend:
 ##   - task: "Portfolio UI (MOCKED data) + contact saves locally"
 ##     implemented: true
