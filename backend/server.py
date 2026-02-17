@@ -46,7 +46,7 @@ class ContactSubmission(BaseModel):
 
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
-    email: str
+    email: EmailStr
     message: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
