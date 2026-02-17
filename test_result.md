@@ -101,3 +101,55 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+## user_problem_statement: "Modern personal portfolio website + backend contact submissions"
+## backend:
+##   - task: "POST /api/contact create submission"
+##     implemented: false
+##     working: "NA"
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Planned: store contact submissions in MongoDB, return created submission. Contracts written in /app/contracts.md."
+##   - task: "GET /api/contact/recent admin recent submissions"
+##     implemented: false
+##     working: "NA"
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Planned: protect with x-admin-key header against ADMIN_API_KEY in backend/.env, return recent submissions sorted by created_at desc."
+## frontend:
+##   - task: "Portfolio UI (MOCKED data) + contact saves locally"
+##     implemented: true
+##     working: true
+##     file: "/app/frontend/src/pages/Portfolio.jsx"
+##     stuck_count: 0
+##     priority: "medium"
+##     needs_retesting: false
+##     status_history:
+##       - working: true
+##         agent: "main"
+##         comment: "Built minimal light + teal portfolio. Contact persistence currently MOCKED via localStorage; will be migrated to backend next."
+## metadata:
+##   created_by: "main_agent"
+##   version: "1.0"
+##   test_sequence: 0
+##   run_ui: false
+## test_plan:
+##   current_focus:
+##     - "POST /api/contact create submission"
+##     - "GET /api/contact/recent admin recent submissions"
+##   stuck_tasks: []
+##   test_all: false
+##   test_priority: "high_first"
+## agent_communication:
+##   - agent: "main"
+##     message: "Created /app/contracts.md defining contact endpoints. Added ADMIN_API_KEY to backend/.env (naseer_admin_2026_key) and restarted backend. Next: implement endpoints in /app/backend/server.py and then run backend tests."
