@@ -6,6 +6,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
+from pydantic.networks import EmailStr
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
