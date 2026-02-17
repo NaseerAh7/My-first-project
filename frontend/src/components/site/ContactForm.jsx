@@ -63,6 +63,50 @@ export default function ContactForm({ ownerEmail }) {
     try {
       await navigator.clipboard.writeText(ownerEmail);
       toast({ title: "Copied", description: ownerEmail });
+
+
+  const fetchAdminRecent = async () => {
+    const key = adminKey.trim();
+    if (!key) {
+      toast({
+        title: "Admin key required",
+        description: "Enter your admin key to load recent submissions.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAdminLoading(true);
+    try {
+      const res = await api.get("/contact/recent", {
+        params: { limit: 20 },
+        headers: { "x-admin-key": key },
+      });
+      setLastSubmissions(res.data.slice(0, 3));
+      toast({
+        title: "Loaded",
+        description: `Fetched ${res.data.length} recent submissions.`,
+      });
+    } catch (e) {
+      const status = e?.response?.status;
+      if (status === 401) {
+        toast({
+          title: "Unauthorized",
+          description: "Invalid admin key.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Failed to load",
+          description: "Could not fetch recent submissions.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setAdminLoading(false);
+    }
+  };
+
     } catch {
       toast({
         title: "Copy failed",
