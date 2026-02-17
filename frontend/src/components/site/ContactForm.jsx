@@ -11,8 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 import { toast } from "@/hooks/use-toast";
-import { appendToArray } from "@/lib/localPersistence";
-import { Mail, Copy, Send } from "lucide-react";
+import { api } from "@/lib/apiClient";
+import { Mail, Copy, Send, ShieldCheck, RefreshCw } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(2, "Please enter your name."),
