@@ -66,6 +66,40 @@ def _require_admin(x_admin_key: Optional[str]) -> None:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 # Add your routes to the router instead of directly to app
+
+
+@api_router.post("/contact", response_model=ContactSubmission, status_code=201)
+async def create_contact_submission(payload: ContactSubmissionCreate):
+    submission = ContactSubmission(**payload.model_dump())
+
+    doc = submission.model_dump()
+    doc["created_at"] = doc["created_at"].isoformat()
+
+    await db.contact_submissions.insert_one(doc)
+    return submission
+
+
+@api_router.get("/contact/recent", response_model=List[ContactSubmission])
+async def get_recent_contact_submissions(
+    limit: int = 20,
+    x_admin_key: Optional[str] = Header(default=None, alias="x-admin-key"),
+):
+    _require_admin(x_admin_key)
+
+    lim = max(1, min(int(limit), 100))
+    docs = (
+        await db.contact_submissions.find({}, {"_id": 0})
+        .sort("created_at", -1)
+        .to_list(lim)
+    )
+
+    # Convert ISO string timestamps back to datetime objects
+    for d in docs:
+        if isinstance(d.get("created_at"), str):
+            d["created_at"] = datetime.fromisoformat(d["created_at"])
+
+    return [ContactSubmission(**d) for d in docs]
+
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
