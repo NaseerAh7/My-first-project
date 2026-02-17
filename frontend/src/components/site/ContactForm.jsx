@@ -63,7 +63,14 @@ export default function ContactForm({ ownerEmail }) {
     try {
       await navigator.clipboard.writeText(ownerEmail);
       toast({ title: "Copied", description: ownerEmail });
-
+    } catch {
+      toast({
+        title: "Copy failed",
+        description: "Your browser blocked clipboard access.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const fetchAdminRecent = async () => {
     const key = adminKey.trim();
@@ -104,15 +111,6 @@ export default function ContactForm({ ownerEmail }) {
       }
     } finally {
       setAdminLoading(false);
-    }
-  };
-
-    } catch {
-      toast({
-        title: "Copy failed",
-        description: "Your browser blocked clipboard access.",
-        variant: "destructive",
-      });
     }
   };
 
