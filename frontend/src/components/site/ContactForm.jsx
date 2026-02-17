@@ -37,20 +37,26 @@ export default function ContactForm({ ownerEmail }) {
   );
 
   const onSubmit = async (values) => {
-    // MOCK: local persistence only. We'll later wire this to a backend/email provider.
-    const saved = appendToArray("portfolio_contact_submissions", {
-      id: crypto.randomUUID?.() || String(Date.now()),
-      ...values,
-      createdAt: new Date().toISOString(),
-    });
-    setLastSubmissions(saved.slice(0, 3));
+    try {
+      const res = await api.post("/contact", values);
+      const created = res.data;
 
-    toast({
-      title: "Message saved (MOCKED)",
-      description: "Saved locally in your browser. We can connect email delivery later.",
-    });
-
-    form.reset();
+      setLastSubmissions((prev) => [created, ...prev].slice(0, 3));
+      toast({
+        title: "Message sent",
+        description: "Thanks — I’ll get back to you soon.",
+      });
+      form.reset();
+    } catch (e) {
+      const msg = e?.response?.data?.detail
+        ? String(e.response.data.detail)
+        : "Could not send your message. Please try again.";
+      toast({
+        title: "Send failed",
+        description: msg,
+        variant: "destructive",
+      });
+    }
   };
 
   const copyEmail = async () => {
