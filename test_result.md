@@ -116,7 +116,7 @@
 ##         agent: "main"
 ##         comment: "Planned: store contact submissions in MongoDB, return created submission. Contracts written in /app/contracts.md."
 ##   - task: "GET /api/contact/recent admin recent submissions"
-##     implemented: false
+##     implemented: true
 ##     working: "NA"
 ##     file: "/app/backend/server.py"
 ##     stuck_count: 0
