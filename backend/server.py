@@ -37,6 +37,34 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+
+
+# Contact Models
+class ContactSubmission(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: str
+    message: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ContactSubmissionCreate(BaseModel):
+    name: str
+    email: str
+    message: str
+
+
+def _require_admin(x_admin_key: Optional[str]) -> None:
+    expected = os.environ.get("ADMIN_API_KEY")
+    if not expected:
+        logger.warning("ADMIN_API_KEY is not set; rejecting admin request")
+        raise HTTPException(status_code=500, detail="Admin auth not configured")
+
+    if not x_admin_key or x_admin_key != expected:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
