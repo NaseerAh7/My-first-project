@@ -172,7 +172,7 @@ export default function ContactForm({ ownerEmail }) {
                     ) : (
                       <RefreshCw className="mr-2 h-4 w-4" />
                     )}
-                    Load
+                    Load recent
                   </Button>
                 </div>
                 <div className="mt-2 text-xs text-zinc-500">
