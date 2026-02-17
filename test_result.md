@@ -114,7 +114,7 @@
 ##     status_history:
 ##       - working: "NA"
 ##         agent: "main"
-##         comment: "Planned: store contact submissions in MongoDB, return created submission. Contracts written in /app/contracts.md."
+##         comment: "Implemented in /app/backend/server.py. Stores in MongoDB contact_submissions; returns created submission with created_at."
 ##       - working: false
 ##         agent: "testing"
 ##         comment: "CRITICAL ISSUE: Email validation not implemented. API accepts invalid email formats (e.g., 'invalid-email-format') and returns 201 instead of 422. All other functionality works: valid submissions return 201 with correct fields (id, name, email, message, created_at), missing field validation works correctly (returns 422), data persistence to MongoDB working."
