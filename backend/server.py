@@ -53,7 +53,7 @@ class ContactSubmission(BaseModel):
 
 class ContactSubmissionCreate(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     message: str
 
 
