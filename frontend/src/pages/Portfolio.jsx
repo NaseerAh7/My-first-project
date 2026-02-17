@@ -354,7 +354,7 @@ export default function Portfolio() {
             id="contact"
             eyebrow="CONTACT"
             title="Let’s talk"
-            description="Tell me about your project or opportunity. For now, submissions save locally (MOCKED) — we’ll wire up email later."
+            description="Tell me about your project or opportunity. Messages are stored in MongoDB — and I’ll wire up email delivery later."
           >
             <ContactForm ownerEmail={profile.email} />
           </Section>
