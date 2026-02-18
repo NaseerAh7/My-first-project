@@ -100,47 +100,14 @@ export default function ContactForm({ ownerEmail }) {
             <div className="flex items-center justify-between gap-2">
               <div className="text-sm font-semibold text-zinc-900">Recent submissions</div>
               <Badge className="border border-zinc-200 bg-white text-zinc-700" variant="secondary">
-                admin
+                latest
               </Badge>
             </div>
 
-            <div className="mt-3 space-y-2">
-              <div className="rounded-lg border border-zinc-200 bg-white p-3">
-                <div className="flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-zinc-500">
-                  <ShieldCheck className="h-4 w-4 text-teal-700" />
-                  ADMIN
-                </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <Input
-                    value={adminKey}
-                    onChange={(e) => setAdminKey(e.target.value)}
-                    placeholder="Enter admin key to load"
-                    className="h-9 border-zinc-200"
-                    type="password"
-                  />
-                  <Button
-                    variant="outline"
-                    className="h-9 border-zinc-200"
-                    onClick={fetchAdminRecent}
-                    disabled={adminLoading}
-                  >
-                    {adminLoading ? (
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <RefreshCw className="mr-2 h-4 w-4" />
-                    )}
-                    Load recent
-                  </Button>
-                </div>
-                <div className="mt-2 text-xs text-zinc-500">
-                  Uses <span className="font-semibold">GET /api/contact/recent</span> with the
-                  <span className="font-semibold"> x-admin-key</span> header.
-                </div>
-              </div>
-
+            <div className="mt-2 space-y-2">
               {lastSubmissions.length === 0 ? (
                 <div className="text-sm text-zinc-600">
-                  No recent items loaded yet.
+                  After you send a message, the latest ones will appear here.
                 </div>
               ) : (
                 lastSubmissions.map((s) => (
@@ -151,7 +118,7 @@ export default function ContactForm({ ownerEmail }) {
                     <div className="flex items-center justify-between gap-2">
                       <div className="truncate text-sm font-medium text-zinc-900">{s.name}</div>
                       <Badge className="bg-teal-50 text-teal-800" variant="secondary">
-                        server
+                        sent
                       </Badge>
                     </div>
                     <div className="mt-1 truncate text-xs text-zinc-600">{s.email}</div>
