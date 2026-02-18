@@ -112,6 +112,18 @@
 ##     working: true
 ##     file: "/app/backend/server.py"
 ##     stuck_count: 0
+##   - task: "Resend email delivery on contact submit"
+##     implemented: true
+##     working: "NA"
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "medium"
+##     needs_retesting: true
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Integrated Resend SDK to send email in background on POST /api/contact. Uses RESEND_API_KEY/SENDER_EMAIL/CONTACT_RECEIVER_EMAIL; no-op if key is missing or placeholder."
+
 ##     priority: "high"
 ##     needs_retesting: false
 ##     status_history:
