@@ -141,6 +141,18 @@ async def _ensure_seed_admin() -> None:
 
     doc = {
         "id": str(uuid.uuid4()),
+
+    # Basic app logging
+    await _log_event(
+        "contact_created",
+        {
+            "submission_id": submission.id,
+            "name": submission.name,
+            "email": str(submission.email),
+            "created_at": submission.created_at.isoformat(),
+        },
+    )
+
         "email": admin_email,
         "password_hash": _hash_password(admin_password),
         "created_at": datetime.now(timezone.utc).isoformat(),
