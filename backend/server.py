@@ -308,6 +308,17 @@ async def get_recent_contact_submissions(
 
     return ContactSubmissionPage(items=items, next_cursor=next_cursor)
 
+
+
+@api_router.get("/health")
+async def health():
+    # Lightweight readiness check for Docker/compose.
+    try:
+        await db.command("ping")
+        return {"status": "ok", "db": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"db_unavailable: {str(e)}")
+
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
