@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/lib/apiClient";
-import { Mail, Copy, Send, ShieldCheck, RefreshCw } from "lucide-react";
+import { Mail, Copy, Send } from "lucide-react";
 
 const schema = z.object({
   name: z.string().min(2, "Please enter your name."),
@@ -22,8 +22,6 @@ const schema = z.object({
 
 export default function ContactForm({ ownerEmail }) {
   const [lastSubmissions, setLastSubmissions] = useState([]);
-  const [adminKey, setAdminKey] = useState("");
-  const [adminLoading, setAdminLoading] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(schema),
