@@ -12,18 +12,18 @@ export const api = axios.create({
   timeout: 20000,
 });
 
-export const AdminKeyStorage = {
-  key: "portfolio_admin_key",
-  get() {
+export const AdminAuthStorage = {
+  key: "portfolio_admin_jwt",
+  getToken() {
     try {
       return window.sessionStorage.getItem(this.key) || "";
     } catch {
       return "";
     }
   },
-  set(value) {
+  setToken(token) {
     try {
-      window.sessionStorage.setItem(this.key, value);
+      window.sessionStorage.setItem(this.key, token);
     } catch {
       // ignore
     }
