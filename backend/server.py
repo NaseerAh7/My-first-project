@@ -26,6 +26,54 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI()
 
 # Create a router with the /api prefix
+
+
+def _env(name: str, default: Optional[str] = None) -> Optional[str]:
+    val = os.environ.get(name)
+    if val is None:
+        return default
+    return val
+
+
+async def _send_contact_email(submission: "ContactSubmission") -> None:
+    api_key = _env("RESEND_API_KEY")
+    sender = _env("SENDER_EMAIL")
+    receiver = _env("CONTACT_RECEIVER_EMAIL")
+
+    # Graceful no-op when not configured yet (MVP-safe)
+    if not api_key or api_key == "YOUR_KEY_HERE" or not sender or not receiver:
+        logger.info("Resend not configured; skipping contact email delivery")
+        return
+
+    resend.api_key = api_key
+
+    subject = f"New portfolio message from {submission.name}"
+    html = (
+        "<div style='font-family:Arial, sans-serif; line-height:1.5'>"
+        "<h2 style='margin:0 0 8px'>New contact submission</h2>"
+        f"<p style='margin:0 0 12px'><strong>Name:</strong> {submission.name}<br/>"
+        f"<strong>Email:</strong> {submission.email}<br/>"
+        f"<strong>Time:</strong> {submission.created_at.isoformat()}</p>"
+        "<div style='padding:12px; border:1px solid #e5e7eb; border-radius:8px; background:#fafafa'>"
+        f"<pre style='white-space:pre-wrap; margin:0'>{submission.message}</pre>"
+        "</div>"
+        "</div>"
+    )
+
+    params = {
+        "from": sender,
+        "to": [receiver],
+        "subject": subject,
+        "html": html,
+        "reply_to": [str(submission.email)],
+    }
+
+    try:
+        await asyncio.to_thread(resend.Emails.send, params)
+        logger.info("Resend email queued for contact submission %s", submission.id)
+    except Exception as e:
+        logger.exception("Failed sending Resend email for submission %s: %s", submission.id, str(e))
+
 api_router = APIRouter(prefix="/api")
 
 
