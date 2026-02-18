@@ -147,23 +147,46 @@ export default function Admin() {
                 <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4">
                   <div className="flex items-center gap-2 text-xs font-semibold tracking-[0.18em] text-zinc-500">
                     <ShieldCheck className="h-4 w-4 text-teal-700" />
-                    X-ADMIN-KEY
+                    ADMIN LOGIN
                   </div>
-                  <div className="mt-2 flex items-center gap-2">
+
+                  <div className="mt-3 space-y-2">
                     <Input
-                      value={adminKey}
-                      onChange={(e) => setAdminKey(e.target.value)}
-                      placeholder="Enter admin key"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Admin email"
+                      className="h-9 border-zinc-200"
+                      type="email"
+                    />
+                    <Input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
                       className="h-9 border-zinc-200"
                       type="password"
                     />
+
+                    <Button
+                      className="h-9 w-full bg-teal-700 text-white hover:bg-teal-800"
+                      onClick={login}
+                      disabled={loading}
+                    >
+                      Sign in
+                    </Button>
+
+                    {authed ? (
+                      <div className="rounded-md border border-zinc-200 bg-white p-2 text-xs text-zinc-600">
+                        Session active (JWT stored in sessionStorage).
+                      </div>
+                    ) : null}
+
                     <Button
                       variant="outline"
-                      className="h-9 border-zinc-200"
+                      className="h-9 w-full border-zinc-200"
                       onClick={() => {
                         navigator.clipboard
-                          ?.writeText(adminKey)
-                          .then(() => toast({ title: "Copied", description: "Admin key copied." }))
+                          ?.writeText(token)
+                          .then(() => toast({ title: "Copied", description: "JWT copied." }))
                           .catch(() =>
                             toast({
                               title: "Copy failed",
@@ -172,12 +195,13 @@ export default function Admin() {
                             })
                           );
                       }}
-                      disabled={!adminKey}
+                      disabled={!token}
                     >
                       <Copy className="mr-2 h-4 w-4" />
-                      Copy
+                      Copy token
                     </Button>
                   </div>
+
                   <div className="mt-2 text-xs text-zinc-500">
                     Stored in <span className="font-semibold">sessionStorage</span> for this browser session.
                   </div>
