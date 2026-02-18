@@ -26,7 +26,7 @@ function formatDate(iso) {
 }
 
 export default function Admin() {
-  const [email, setEmail] = useState(profile.email);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState(() => AdminAuthStorage.getToken());
 
@@ -36,8 +36,8 @@ export default function Admin() {
 
   const authed = useMemo(() => token.trim().length > 0, [token]);
 
-  const loadPage = async ({ reset = false } = {}) => {
-    const t = token.trim();
+  const loadPage = async ({ reset = false, tokenOverride } = {}) => {
+    const t = (tokenOverride || token).trim();
     if (!t) {
       toast({
         title: "Login required",
@@ -110,7 +110,7 @@ export default function Admin() {
       setToken(t);
       AdminAuthStorage.setToken(t);
       toast({ title: "Signed in", description: "Admin access granted." });
-      await loadPage({ reset: true });
+      await loadPage({ reset: true, tokenOverride: t });
     } catch (e) {
       toast({
         title: "Login failed",
