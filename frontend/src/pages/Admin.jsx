@@ -6,7 +6,7 @@ import Section from "@/components/site/Section";
 
 import { profile } from "@/mock";
 
-import { api, AdminKeyStorage } from "@/lib/apiClient";
+import { api, AdminAuthStorage } from "@/lib/apiClient";
 import { toast } from "@/hooks/use-toast";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
