@@ -394,14 +394,16 @@ def test_recent_contacts_valid_jwt():
         return False
 
 def test_cursor_pagination():
-    """Test cursor pagination behavior - call once to get next_cursor, then call again with cursor"""
-    print("\n🔍 Testing GET /api/contact/recent (cursor pagination behavior)")
+    """Test cursor pagination behavior with JWT auth - call once to get next_cursor, then call again with cursor"""
+    print("\n🔍 Testing GET /api/contact/recent (cursor pagination behavior with JWT)")
     
-    if not ADMIN_API_KEY:
-        print("❌ ADMIN_API_KEY not found in backend/.env")
+    # First get a valid token
+    login_success, access_token = test_admin_login_valid()
+    if not login_success or not access_token:
+        print("❌ Could not get valid access token for pagination testing")
         return False
     
-    headers = {"x-admin-key": ADMIN_API_KEY}
+    headers = {"Authorization": f"Bearer {access_token}"}
     
     try:
         # First call - get initial page with limit=2 to ensure we get a cursor
