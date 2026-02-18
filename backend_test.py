@@ -359,6 +359,8 @@ def test_cursor_pagination():
     except Exception as e:
         print(f"❌ Cursor pagination test failed: {str(e)}")
         return False
+
+def test_recent_contacts_limit_bounds():
     """Test GET /api/contact/recent limit parameter bounds - NEW PAGINATED FORMAT"""
     print("\n🔍 Testing GET /api/contact/recent (limit bounds - paginated format)")
     
