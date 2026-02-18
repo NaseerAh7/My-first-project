@@ -150,6 +150,9 @@
 ##       - working: true
 ##         agent: "testing"
 ##         comment: "All functionality working correctly: No auth header returns 401, wrong x-admin-key returns 401, correct x-admin-key (naseer_admin_2026_key) returns 200 with array sorted by created_at desc, limit bounds working (limit=1 returns 1 item, limit=999 caps at 100, tested with 2 existing items)."
+##       - working: true
+##         agent: "testing"
+##         comment: "PAGINATION UPDATE VERIFIED: API now returns paginated format {items, next_cursor} instead of array. All authentication and sorting working correctly. Cursor pagination tested: first page with limit=2 returns next_cursor, second page with cursor returns older items with no duplicates, cursor advances properly. Limit bounds working: limit=1 returns 1 item, limit=999 caps correctly. All 9/9 backend tests passing."
 ## frontend:
 ##   - task: "Portfolio UI + contact integrated with backend"
 ##     implemented: true
