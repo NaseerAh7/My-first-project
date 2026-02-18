@@ -37,11 +37,11 @@ export default function Admin() {
   const authed = useMemo(() => token.trim().length > 0, [token]);
 
   const loadPage = async ({ reset = false } = {}) => {
-    const key = adminKey.trim();
-    if (!key) {
+    const t = token.trim();
+    if (!t) {
       toast({
-        title: "Admin key required",
-        description: "Enter your admin key to load submissions.",
+        title: "Login required",
+        description: "Sign in to load submissions.",
         variant: "destructive",
       });
       return;
@@ -54,7 +54,7 @@ export default function Admin() {
           limit: 10,
           cursor: reset ? undefined : nextCursor || undefined,
         },
-        headers: { "x-admin-key": key },
+        headers: { Authorization: `Bearer ${t}` },
       });
 
       const payload = res.data;
