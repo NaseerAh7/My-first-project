@@ -173,6 +173,23 @@ async def _startup() -> None:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
+
+
+@api_router.post("/auth/login", response_model=AdminLoginResponse)
+async def admin_login(payload: AdminLoginRequest):
+    admin = await db.admin_users.find_one({"email": str(payload.email)}, {"_id": 0})
+    if not admin:
+        await _log_event("admin_login_failed", {"email": str(payload.email), "reason": "not_found"})
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    if not _verify_password(payload.password, admin.get("password_hash", "")):
+        await _log_event("admin_login_failed", {"email": str(payload.email), "reason": "bad_password"})
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    token = _create_access_token(subject=str(payload.email))
+    await _log_event("admin_login_success", {"email": str(payload.email)})
+    return AdminLoginResponse(access_token=token, expires_in=_jwt_expires_seconds())
+
 async def _log_event(event_type: str, payload: Dict[str, Any]) -> None:
     doc = {
         "id": str(uuid.uuid4()),
