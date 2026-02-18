@@ -210,3 +210,47 @@
 ##     message: "Implemented improvements: dedicated /admin page (not linked), cursor pagination for GET /api/contact/recent (now returns {items,next_cursor} and accepts cursor), and Resend email delivery background task on POST /api/contact (graceful no-op until RESEND_API_KEY set). Please test backend + UI."
 ##   - agent: "testing"
 ##     message: "BACKEND PAGINATION & RESEND TESTING COMPLETE: All review requirements verified successfully. (1) GET /api/contact/recent returns paginated {items, next_cursor} format with correct x-admin-key auth, (2) Cursor pagination working: first call gets next_cursor, second call with cursor returns older items with no duplicates and cursor advances, (3) Limit bounds working correctly, (4) POST /api/contact still returns 201, (5) Resend integration gracefully handles placeholder key 'YOUR_KEY_HERE' - logs show 'Resend not configured; skipping contact email delivery' and API returns 201 without errors. Updated backend_test.py with new pagination tests. All 9/9 backend tests passing."
+##   - agent: "main"
+##     message: "Implemented JWT authentication system: POST /api/auth/login endpoint with admin credentials from backend/.env, GET /api/contact/recent now requires Bearer token (legacy x-admin-key removed), JWT tokens expire in 24h. Please test new JWT auth + contact endpoints."
+##   - task: "POST /api/auth/login JWT authentication"
+##     implemented: true
+##     working: true
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Implemented JWT login endpoint using ADMIN_EMAIL/ADMIN_PASSWORD from backend/.env. Returns access_token, token_type=bearer, expires_in. Uses bcrypt password hashing and HS256 JWT signing."
+##       - working: true
+##         agent: "testing"
+##         comment: "JWT LOGIN VERIFIED: Valid credentials (naserahmad7789@gmail.com + Naseer2026!) return 200 with access_token, token_type='bearer', expires_in=86400. Invalid password returns 401 with 'Invalid credentials'. Token format and structure correct. All authentication requirements working perfectly."
+##   - task: "GET /api/contact/recent JWT Bearer token auth"
+##     implemented: true
+##     working: true
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Updated GET /api/contact/recent to require JWT Bearer token in Authorization header. Removed legacy x-admin-key authentication. Returns 401 for missing/invalid tokens."
+##       - working: true
+##         agent: "testing"
+##         comment: "JWT BEARER AUTH VERIFIED: (1) No Authorization header returns 401 'Missing Authorization header', (2) Invalid Bearer token returns 401 'Invalid token', (3) Valid JWT Bearer token returns 200 with {items, next_cursor} paginated format, (4) Legacy x-admin-key now properly rejected with 401 'Missing Authorization header'. JWT migration complete and working correctly."
+##   - task: "JWT auth + pagination integration"
+##     implemented: true
+##     working: true
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Combined JWT authentication with cursor pagination for GET /api/contact/recent. All pagination features (cursor, limit bounds) work with JWT Bearer tokens."
+##       - working: true
+##         agent: "testing"
+##         comment: "JWT + PAGINATION INTEGRATION VERIFIED: Cursor pagination working perfectly with JWT Bearer tokens. First page (limit=2) returns next_cursor, second page with cursor returns older items with no duplicates, cursor advances properly. Limit bounds working: limit=1 returns 1 item, limit=999 capped correctly. All 12/12 backend tests passing including JWT authentication."
