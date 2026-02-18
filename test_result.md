@@ -148,6 +148,19 @@
 ##   - task: "Basic API tests for /api/contact"
 ##     implemented: true
 ##     working: true
+## backend:
+##   - task: "GET /api/health readiness endpoint"
+##     implemented: true
+##     working: true
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "low"
+##     needs_retesting: false
+##     status_history:
+##       - working: true
+##         agent: "deep_testing_backend_v2"
+##         comment: "Returns 200 with {status:'ok', db:'ok'} when MongoDB available."
+
 ##     file: "/app/backend/backend_test.py"
 ##     stuck_count: 0
 ##     priority: "medium"
