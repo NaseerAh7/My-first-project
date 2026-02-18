@@ -156,6 +156,19 @@
 ##   test_sequence: 0
 ##   run_ui: false
 ## test_plan:
+## frontend:
+##   - task: "Admin page (/admin) + cursor pagination"
+##     implemented: true
+##     working: "NA"
+##     file: "/app/frontend/src/pages/Admin.jsx"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: true
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Added dedicated /admin page with sessionStorage admin-key persistence and 'Load more' cursor pagination calling GET /api/contact/recent (returns {items,next_cursor})."
+
 ##   current_focus: []
 ##   stuck_tasks: []
 ##   test_all: false
