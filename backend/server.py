@@ -140,26 +140,38 @@ async def create_contact_submission(payload: ContactSubmissionCreate, background
     return submission
 
 
-@api_router.get("/contact/recent", response_model=List[ContactSubmission])
+@api_router.get("/contact/recent", response_model=ContactSubmissionPage)
 async def get_recent_contact_submissions(
     limit: int = 20,
+    cursor: Optional[str] = None,
     x_admin_key: Optional[str] = Header(default=None, alias="x-admin-key"),
 ):
     _require_admin(x_admin_key)
 
     lim = max(1, min(int(limit), 100))
+
+    query = {}
+    if cursor:
+        # created_at stored as ISO string; lexicographic compare works for ISO-8601 UTC
+        query = {"created_at": {"$lt": cursor}}
+
     docs = (
-        await db.contact_submissions.find({}, {"_id": 0})
+        await db.contact_submissions.find(query, {"_id": 0})
         .sort("created_at", -1)
         .to_list(lim)
     )
 
-    # Convert ISO string timestamps back to datetime objects
+    items: List[ContactSubmission] = []
     for d in docs:
         if isinstance(d.get("created_at"), str):
             d["created_at"] = datetime.fromisoformat(d["created_at"])
+        items.append(ContactSubmission(**d))
 
-    return [ContactSubmission(**d) for d in docs]
+    next_cursor = None
+    if len(items) == lim:
+        next_cursor = items[-1].created_at.isoformat()
+
+    return ContactSubmissionPage(items=items, next_cursor=next_cursor)
 
 @api_router.get("/")
 async def root():
