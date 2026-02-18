@@ -298,3 +298,19 @@
 ##         comment: "JWT + PAGINATION INTEGRATION VERIFIED: Cursor pagination working perfectly with JWT Bearer tokens. First page (limit=2) returns next_cursor, second page with cursor returns older items with no duplicates, cursor advances properly. Limit bounds working: limit=1 returns 1 item, limit=999 capped correctly. All 12/12 backend tests passing including JWT authentication."
 ##   - agent: "testing"
 ##     message: "JWT AUTHENTICATION TESTING COMPLETE: All review request requirements verified successfully. (1) POST /api/auth/login: Valid credentials return 200 with access_token/token_type=bearer/expires_in, invalid password returns 401. (2) GET /api/contact/recent: No Authorization header returns 401, invalid Bearer token returns 401, valid JWT Bearer token returns 200 with {items, next_cursor}. (3) POST /api/contact still works (returns 201). (4) Legacy x-admin-key properly rejected with 401. Updated backend_test.py with comprehensive JWT tests. All 12/12 backend tests passing. JWT migration successful."
+##   - task: "GET /api/health readiness endpoint"
+##     implemented: true
+##     working: true
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Added /api/health endpoint for Docker/compose readiness checks. Returns {status:'ok', db:'ok'} when MongoDB ping succeeds, 503 with error details when database unavailable."
+##       - working: true
+##         agent: "testing"
+##         comment: "HEALTH ENDPOINT VERIFIED: GET /api/health returns 200 with {status:'ok', db:'ok'} confirming MongoDB connection is working. Endpoint responds correctly and database connectivity confirmed. All existing auth + contact endpoints still working: POST /api/contact (201), POST /api/auth/login (200 with JWT), GET /api/contact/recent (200 with JWT Bearer auth). Updated backend_test.py with health check test. All 5/5 sanity tests passing."
+##   - agent: "testing"
+##     message: "HEALTH ENDPOINT + SANITY CHECK COMPLETE: New /api/health endpoint working perfectly - returns 200 with {status:'ok', db:'ok'} confirming MongoDB connectivity. All existing critical endpoints verified: (1) GET /api/health: 200 with correct response format, (2) POST /api/contact: 201 with valid submission, (3) POST /api/auth/login: 200 with JWT token, (4) GET /api/contact/recent: 200 with JWT Bearer auth + paginated format. No regressions detected. All 5/5 backend tests passing."
