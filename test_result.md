@@ -98,6 +98,10 @@
 
 
 
+##
+## update_note:
+##   - agent: "main"
+##     message: "Planned changes: add /api/health readiness endpoint; add backend pytest covering login+Bearer call to /api/contact/recent; confirm /admin auto-refresh after login (already implemented). Will re-run backend tests after changes."
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
