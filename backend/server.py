@@ -250,7 +250,24 @@ async def create_contact_submission(payload: ContactSubmissionCreate, background
     doc = submission.model_dump()
     doc["created_at"] = doc["created_at"].isoformat()
 
-    await db.contact_submissions.insert_one(doc)
+    try:
+        await db.contact_submissions.insert_one(doc)
+        await _log_event(
+            "contact_created",
+            {
+                "submission_id": submission.id,
+                "name": submission.name,
+                "email": str(submission.email),
+                "created_at": submission.created_at.isoformat(),
+            },
+        )
+    except Exception as e:
+        logger.exception("Failed to persist contact submission")
+        await _log_event(
+            "contact_persist_failed",
+            {"error": str(e), "email": str(submission.email)},
+        )
+        raise HTTPException(status_code=500, detail="Could not save message")
 
     # Non-blocking email delivery (no-op if Resend not configured)
     background_tasks.add_task(_send_contact_email, submission)
