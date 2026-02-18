@@ -80,6 +80,73 @@ async def _send_contact_email(submission: "ContactSubmission") -> None:
 api_router = APIRouter(prefix="/api")
 
 
+# --- Auth + Logging helpers ---
+PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def _jwt_secret() -> str:
+    secret = _env("JWT_SECRET")
+    if not secret:
+        raise RuntimeError("JWT_SECRET is not configured")
+    return secret
+
+
+def _jwt_expires_seconds() -> int:
+    raw = _env("JWT_EXPIRES_SECONDS", "86400")
+    try:
+        return int(raw or 86400)
+    except Exception:
+        return 86400
+
+
+def _hash_password(password: str) -> str:
+    return PWD_CONTEXT.hash(password)
+
+
+def _verify_password(password: str, password_hash: str) -> bool:
+    return PWD_CONTEXT.verify(password, password_hash)
+
+
+def _create_access_token(subject: str) -> str:
+    now = datetime.now(timezone.utc)
+    exp = now + timedelta(seconds=_jwt_expires_seconds())
+    payload = {"sub": subject, "iat": int(now.timestamp()), "exp": int(exp.timestamp())}
+    return jwt.encode(payload, _jwt_secret(), algorithm="HS256")
+
+
+def _require_jwt(authorization: Optional[str]) -> str:
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+
+    parts = authorization.split(" ")
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        raise HTTPException(status_code=401, detail="Invalid Authorization header")
+
+    token = parts[1]
+    try:
+        payload = jwt.decode(token, _jwt_secret(), algorithms=["HS256"])
+        sub = payload.get("sub")
+        if not sub:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return str(sub)
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+async def _log_event(event_type: str, payload: Dict[str, Any]) -> None:
+    doc = {
+        "id": str(uuid.uuid4()),
+        "event_type": event_type,
+        "payload": payload,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    try:
+        await db.app_logs.insert_one(doc)
+    except Exception:
+        logger.exception("Failed writing app log")
+
+
+
 # Define Models
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
