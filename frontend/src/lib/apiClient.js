@@ -11,3 +11,28 @@ export const api = axios.create({
   baseURL: getApiBase(),
   timeout: 20000,
 });
+
+export const AdminKeyStorage = {
+  key: "portfolio_admin_key",
+  get() {
+    try {
+      return window.sessionStorage.getItem(this.key) || "";
+    } catch {
+      return "";
+    }
+  },
+  set(value) {
+    try {
+      window.sessionStorage.setItem(this.key, value);
+    } catch {
+      // ignore
+    }
+  },
+  clear() {
+    try {
+      window.sessionStorage.removeItem(this.key);
+    } catch {
+      // ignore
+    }
+  },
+};
