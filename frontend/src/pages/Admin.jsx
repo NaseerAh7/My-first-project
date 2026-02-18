@@ -26,12 +26,15 @@ function formatDate(iso) {
 }
 
 export default function Admin() {
-  const [adminKey, setAdminKey] = useState(() => AdminKeyStorage.get());
+  const [email, setEmail] = useState(profile.email);
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState(() => AdminAuthStorage.getToken());
+
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
   const [nextCursor, setNextCursor] = useState(null);
 
-  const authed = useMemo(() => adminKey.trim().length > 0, [adminKey]);
+  const authed = useMemo(() => token.trim().length > 0, [token]);
 
   const loadPage = async ({ reset = false } = {}) => {
     const key = adminKey.trim();
