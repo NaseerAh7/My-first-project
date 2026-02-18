@@ -240,14 +240,7 @@ class ContactSubmissionCreate(BaseModel):
     message: str
 
 
-def _require_admin(x_admin_key: Optional[str]) -> None:
-    expected = os.environ.get("ADMIN_API_KEY")
-    if not expected:
-        logger.warning("ADMIN_API_KEY is not set; rejecting admin request")
-        raise HTTPException(status_code=500, detail="Admin auth not configured")
-
-    if not x_admin_key or x_admin_key != expected:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+# Legacy header auth removed; admin endpoints now require JWT.
 
 # Add your routes to the router instead of directly to app
 
