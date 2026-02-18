@@ -120,13 +120,17 @@ def _require_admin(x_admin_key: Optional[str]) -> None:
 
 
 @api_router.post("/contact", response_model=ContactSubmission, status_code=201)
-async def create_contact_submission(payload: ContactSubmissionCreate):
+async def create_contact_submission(payload: ContactSubmissionCreate, background_tasks: BackgroundTasks):
     submission = ContactSubmission(**payload.model_dump())
 
     doc = submission.model_dump()
     doc["created_at"] = doc["created_at"].isoformat()
 
     await db.contact_submissions.insert_one(doc)
+
+    # Non-blocking email delivery (no-op if Resend not configured)
+    background_tasks.add_task(_send_contact_email, submission)
+
     return submission
 
 
