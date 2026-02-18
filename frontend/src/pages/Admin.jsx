@@ -246,7 +246,7 @@ export default function Admin() {
                 <Separator />
 
                 <div className="text-xs text-zinc-500">
-                  Endpoint: <span className="font-semibold">GET /api/contact/recent</span> (cursor pagination)
+                  Endpoint: <span className="font-semibold">GET /api/contact/recent</span> (JWT + cursor pagination)
                 </div>
               </CardContent>
             </Card>
