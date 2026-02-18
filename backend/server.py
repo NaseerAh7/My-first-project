@@ -56,6 +56,12 @@ async def _send_contact_email(submission: "ContactSubmission") -> None:
         f"<strong>Time:</strong> {submission.created_at.isoformat()}</p>"
         "<div style='padding:12px; border:1px solid #e5e7eb; border-radius:8px; background:#fafafa'>"
         f"<pre style='white-space:pre-wrap; margin:0'>{submission.message}</pre>"
+
+
+class ContactSubmissionPage(BaseModel):
+    items: List[ContactSubmission]
+    next_cursor: Optional[str] = None
+
         "</div>"
         "</div>"
     )
