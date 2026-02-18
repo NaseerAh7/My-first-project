@@ -7,11 +7,14 @@ import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
 from pydantic.networks import EmailStr
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import asyncio
 import resend
+from jose import jwt, JWTError
+from passlib.context import CryptContext
+
 
 
 ROOT_DIR = Path(__file__).parent
