@@ -128,6 +128,44 @@
 ##         comment: "RESEND INTEGRATION VERIFIED: With RESEND_API_KEY set to placeholder 'YOUR_KEY_HERE', API gracefully skips email delivery (logs show 'Resend not configured; skipping contact email delivery') and still returns 201 as expected. No failures or errors. Background task integration working correctly."
 
 ##     priority: "high"
+## backend:
+##   - task: "JWT admin auth (email+password) + protect /api/contact/recent"
+##     implemented: true
+##     working: true
+##     file: "/app/backend/server.py"
+##     stuck_count: 0
+##     priority: "high"
+##     needs_retesting: false
+##     status_history:
+##       - working: true
+##         agent: "deep_testing_backend_v2"
+##         comment: "POST /api/auth/login works (valid->200, invalid->401). /api/contact/recent requires Bearer token and rejects legacy x-admin-key."
+##
+##   - task: "Basic API tests for /api/contact"
+##     implemented: true
+##     working: true
+##     file: "/app/backend/backend_test.py"
+##     stuck_count: 0
+##     priority: "medium"
+##     needs_retesting: false
+##     status_history:
+##       - working: true
+##         agent: "main"
+##         comment: "Added 3 pytest tests: create ok, invalid email 422, and recent requires JWT (401)."
+##
+## devops:
+##   - task: "Docker compose setup (frontend+backend+mongo)"
+##     implemented: true
+##     working: "NA"
+##     file: "/app/docker-compose.yml"
+##     stuck_count: 0
+##     priority: "medium"
+##     needs_retesting: true
+##     status_history:
+##       - working: "NA"
+##         agent: "main"
+##         comment: "Added docker-compose.yml + Dockerfiles for frontend/backend. Not executed in this environment."
+
 ##     needs_retesting: false
 ##     status_history:
 ##       - working: "NA"
