@@ -177,9 +177,105 @@ def test_contact_submission_invalid_email():
         print(f"❌ Invalid email test failed: {str(e)}")
         return False
 
+# JWT Authentication Tests
+
+def test_admin_login_valid():
+    """Test POST /api/auth/login with valid credentials"""
+    print("\n🔍 Testing POST /api/auth/login (valid credentials)")
+    
+    admin_email = backend_env.get('ADMIN_EMAIL')
+    admin_password = backend_env.get('ADMIN_PASSWORD')
+    
+    if not admin_email or not admin_password:
+        print("❌ ADMIN_EMAIL/ADMIN_PASSWORD not found in backend/.env")
+        return False, None
+    
+    login_data = {
+        "email": admin_email,
+        "password": admin_password
+    }
+    
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Check required fields
+            required_fields = ['access_token', 'token_type', 'expires_in']
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                print(f"❌ Missing required fields: {missing_fields}")
+                return False, None
+            
+            if data.get('token_type') != 'bearer':
+                print(f"❌ Expected token_type='bearer', got '{data.get('token_type')}'")
+                return False, None
+            
+            access_token = data.get('access_token')
+            if not access_token:
+                print("❌ No access_token in response")
+                return False, None
+            
+            print("✅ Valid login working correctly")
+            return True, access_token
+        else:
+            print(f"❌ Expected 200, got {response.status_code}")
+            return False, None
+            
+    except Exception as e:
+        print(f"❌ Valid login test failed: {str(e)}")
+        return False, None
+
+def test_admin_login_invalid():
+    """Test POST /api/auth/login with invalid password"""
+    print("\n🔍 Testing POST /api/auth/login (invalid password)")
+    
+    admin_email = backend_env.get('ADMIN_EMAIL')
+    
+    if not admin_email:
+        print("❌ ADMIN_EMAIL not found in backend/.env")
+        return False
+    
+    login_data = {
+        "email": admin_email,
+        "password": "wrong_password_123"
+    }
+    
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/auth/login",
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.text}")
+        
+        if response.status_code == 401:
+            print("✅ Invalid password rejected - working correctly")
+            return True
+        else:
+            print(f"❌ Expected 401, got {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Invalid login test failed: {str(e)}")
+        return False
+
 def test_recent_contacts_no_auth():
-    """Test GET /api/contact/recent without authentication"""
-    print("\n🔍 Testing GET /api/contact/recent (no auth header)")
+    """Test GET /api/contact/recent without Authorization header"""
+    print("\n🔍 Testing GET /api/contact/recent (no Authorization header)")
     
     try:
         response = requests.get(f"{API_BASE_URL}/contact/recent", timeout=10)
@@ -198,38 +294,62 @@ def test_recent_contacts_no_auth():
         print(f"❌ No auth test failed: {str(e)}")
         return False
 
-def test_recent_contacts_wrong_auth():
-    """Test GET /api/contact/recent with wrong authentication"""
-    print("\n🔍 Testing GET /api/contact/recent (wrong auth key)")
+def test_recent_contacts_invalid_token():
+    """Test GET /api/contact/recent with invalid Bearer token"""
+    print("\n🔍 Testing GET /api/contact/recent (invalid Bearer token)")
     
     try:
-        headers = {"x-admin-key": "wrong_key_123"}
+        headers = {"Authorization": "Bearer invalid_token_123"}
         response = requests.get(f"{API_BASE_URL}/contact/recent", headers=headers, timeout=10)
         
         print(f"Status Code: {response.status_code}")
         print(f"Response: {response.text}")
         
         if response.status_code == 401:
-            print("✅ Wrong auth key rejected - working correctly")
+            print("✅ Invalid token rejected - working correctly")
             return True
         else:
             print(f"❌ Expected 401, got {response.status_code}")
             return False
             
     except Exception as e:
-        print(f"❌ Wrong auth test failed: {str(e)}")
+        print(f"❌ Invalid token test failed: {str(e)}")
         return False
 
-def test_recent_contacts_valid_auth():
-    """Test GET /api/contact/recent with valid authentication - NEW PAGINATED FORMAT"""
-    print("\n🔍 Testing GET /api/contact/recent (valid auth - paginated format)")
-    
-    if not ADMIN_API_KEY:
-        print("❌ ADMIN_API_KEY not found in backend/.env")
-        return False
+def test_recent_contacts_legacy_auth():
+    """Test GET /api/contact/recent with legacy x-admin-key (should be rejected)"""
+    print("\n🔍 Testing GET /api/contact/recent (legacy x-admin-key - should be rejected)")
     
     try:
         headers = {"x-admin-key": ADMIN_API_KEY}
+        response = requests.get(f"{API_BASE_URL}/contact/recent", headers=headers, timeout=10)
+        
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.text}")
+        
+        if response.status_code == 401:
+            print("✅ Legacy x-admin-key rejected - JWT migration working correctly")
+            return True
+        else:
+            print(f"❌ Expected 401 (legacy auth should be rejected), got {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Legacy auth test failed: {str(e)}")
+        return False
+
+def test_recent_contacts_valid_jwt():
+    """Test GET /api/contact/recent with valid Bearer token"""
+    print("\n🔍 Testing GET /api/contact/recent (valid Bearer token)")
+    
+    # First get a valid token
+    login_success, access_token = test_admin_login_valid()
+    if not login_success or not access_token:
+        print("❌ Could not get valid access token for testing")
+        return False
+    
+    try:
+        headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(f"{API_BASE_URL}/contact/recent", headers=headers, timeout=10)
         
         print(f"Status Code: {response.status_code}")
@@ -238,12 +358,12 @@ def test_recent_contacts_valid_auth():
         if response.status_code == 200:
             data = response.json()
             
-            # Check for new paginated format {items, next_cursor}
+            # Check for paginated format {items, next_cursor}
             if isinstance(data, dict) and 'items' in data and 'next_cursor' in data:
                 items = data['items']
                 next_cursor = data['next_cursor']
                 
-                print(f"✅ Paginated format working - returned {len(items)} submissions")
+                print(f"✅ JWT auth + paginated format working - returned {len(items)} submissions")
                 print(f"Next cursor: {next_cursor}")
                 
                 # Check if items is an array
@@ -270,7 +390,7 @@ def test_recent_contacts_valid_auth():
             return False
             
     except Exception as e:
-        print(f"❌ Valid auth test failed: {str(e)}")
+        print(f"❌ Valid JWT test failed: {str(e)}")
         return False
 
 def test_cursor_pagination():
