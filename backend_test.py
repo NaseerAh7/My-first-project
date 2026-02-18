@@ -221,8 +221,8 @@ def test_recent_contacts_wrong_auth():
         return False
 
 def test_recent_contacts_valid_auth():
-    """Test GET /api/contact/recent with valid authentication"""
-    print("\n🔍 Testing GET /api/contact/recent (valid auth)")
+    """Test GET /api/contact/recent with valid authentication - NEW PAGINATED FORMAT"""
+    print("\n🔍 Testing GET /api/contact/recent (valid auth - paginated format)")
     
     if not ADMIN_API_KEY:
         print("❌ ADMIN_API_KEY not found in backend/.env")
@@ -237,12 +237,23 @@ def test_recent_contacts_valid_auth():
         
         if response.status_code == 200:
             data = response.json()
-            if isinstance(data, list):
-                print(f"✅ Valid auth working - returned {len(data)} submissions")
+            
+            # Check for new paginated format {items, next_cursor}
+            if isinstance(data, dict) and 'items' in data and 'next_cursor' in data:
+                items = data['items']
+                next_cursor = data['next_cursor']
+                
+                print(f"✅ Paginated format working - returned {len(items)} submissions")
+                print(f"Next cursor: {next_cursor}")
+                
+                # Check if items is an array
+                if not isinstance(items, list):
+                    print("❌ Items should be an array")
+                    return False
                 
                 # Check if sorted by created_at desc (if we have multiple items)
-                if len(data) > 1:
-                    dates = [item.get('created_at') for item in data if 'created_at' in item]
+                if len(items) > 1:
+                    dates = [item.get('created_at') for item in items if 'created_at' in item]
                     if dates == sorted(dates, reverse=True):
                         print("✅ Results properly sorted by created_at desc")
                     else:
@@ -251,7 +262,8 @@ def test_recent_contacts_valid_auth():
                 
                 return True
             else:
-                print("❌ Expected array response")
+                print("❌ Expected paginated format {items, next_cursor}")
+                print(f"Got keys: {list(data.keys()) if isinstance(data, dict) else 'not a dict'}")
                 return False
         else:
             print(f"❌ Expected 200, got {response.status_code}")
