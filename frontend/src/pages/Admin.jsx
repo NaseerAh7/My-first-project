@@ -220,11 +220,12 @@ export default function Admin() {
                     variant="outline"
                     className="border-zinc-200"
                     onClick={() => {
-                      AdminKeyStorage.clear();
-                      setAdminKey("");
+                      AdminAuthStorage.clear();
+                      setToken("");
+                      setPassword("");
                       setItems([]);
                       setNextCursor(null);
-                      toast({ title: "Cleared", description: "Admin key removed for this session." });
+                      toast({ title: "Signed out", description: "Admin session cleared." });
                     }}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
