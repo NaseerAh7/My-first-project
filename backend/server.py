@@ -126,6 +126,33 @@ class AdminLoginRequest(BaseModel):
 class AdminLoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+async def _ensure_seed_admin() -> None:
+    admin_email = _env("ADMIN_EMAIL")
+    admin_password = _env("ADMIN_PASSWORD")
+    if not admin_email or not admin_password:
+        logger.warning("ADMIN_EMAIL/ADMIN_PASSWORD not set; admin login will fail")
+        return
+
+    existing = await db.admin_users.find_one({"email": admin_email}, {"_id": 0})
+    if existing:
+        return
+
+    doc = {
+        "id": str(uuid.uuid4()),
+        "email": admin_email,
+        "password_hash": _hash_password(admin_password),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.admin_users.insert_one(doc)
+    logger.info("Seeded initial admin user: %s", admin_email)
+
+
+@app.on_event("startup")
+async def _startup() -> None:
+    await _ensure_seed_admin()
+
     expires_in: int
 
     if not authorization:
