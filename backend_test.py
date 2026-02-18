@@ -545,7 +545,7 @@ def test_recent_contacts_limit_bounds():
 
 def main():
     """Run all backend tests"""
-    print("🚀 Starting Backend API Tests")
+    print("🚀 Starting Backend API Tests - JWT Authentication Focus")
     print(f"Backend URL: {API_BASE_URL}")
     
     tests = [
@@ -553,11 +553,14 @@ def main():
         ("Contact Submission (Valid)", test_contact_submission_valid),
         ("Contact Submission (Missing Fields)", test_contact_submission_missing_fields),
         ("Contact Submission (Invalid Email)", test_contact_submission_invalid_email),
-        ("Recent Contacts (No Auth)", test_recent_contacts_no_auth),
-        ("Recent Contacts (Wrong Auth)", test_recent_contacts_wrong_auth),
-        ("Recent Contacts (Valid Auth)", test_recent_contacts_valid_auth),
-        ("Cursor Pagination Behavior", test_cursor_pagination),
-        ("Recent Contacts (Limit Bounds)", test_recent_contacts_limit_bounds),
+        ("Admin Login (Valid Credentials)", lambda: test_admin_login_valid()[0]),  # Only return success boolean
+        ("Admin Login (Invalid Password)", test_admin_login_invalid),
+        ("Recent Contacts (No Authorization Header)", test_recent_contacts_no_auth),
+        ("Recent Contacts (Invalid Bearer Token)", test_recent_contacts_invalid_token),
+        ("Recent Contacts (Legacy x-admin-key - Should Fail)", test_recent_contacts_legacy_auth),
+        ("Recent Contacts (Valid JWT Bearer Token)", test_recent_contacts_valid_jwt),
+        ("Cursor Pagination with JWT", test_cursor_pagination),
+        ("Recent Contacts Limit Bounds with JWT", test_recent_contacts_limit_bounds),
     ]
     
     results = {}
