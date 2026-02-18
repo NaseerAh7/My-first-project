@@ -115,6 +115,19 @@ def _create_access_token(subject: str) -> str:
 
 
 def _require_jwt(authorization: Optional[str]) -> str:
+
+
+# Auth Models
+class AdminLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class AdminLoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
     if not authorization:
         raise HTTPException(status_code=401, detail="Missing Authorization header")
 
