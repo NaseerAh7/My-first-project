@@ -131,7 +131,7 @@ export default function Admin() {
           id="admin"
           eyebrow="ADMIN"
           title="Recent contact submissions"
-          description="Protected endpoint using x-admin-key. This page is intentionally not linked in the main navigation."
+          description="Protected endpoint using email+password login (JWT). This page is intentionally not linked in the main navigation."
         >
           <div className="grid gap-6 md:grid-cols-12">
             <Card className="border-zinc-200 shadow-sm md:col-span-4">
