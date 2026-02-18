@@ -264,9 +264,9 @@ async def create_contact_submission(payload: ContactSubmissionCreate, background
 async def get_recent_contact_submissions(
     limit: int = 20,
     cursor: Optional[str] = None,
-    x_admin_key: Optional[str] = Header(default=None, alias="x-admin-key"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
 ):
-    _require_admin(x_admin_key)
+    _ = _require_jwt(authorization)
 
     lim = max(1, min(int(limit), 100))
 
