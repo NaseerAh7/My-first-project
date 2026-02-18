@@ -38,6 +38,29 @@ print(f"Testing backend at: {API_BASE_URL}")
 print(f"Admin API Key: {'*' * len(ADMIN_API_KEY) if ADMIN_API_KEY else 'NOT SET'}")
 print("=" * 60)
 
+def test_health_endpoint():
+    """Test GET /api/health returns status and db check"""
+    print("\n🔍 Testing GET /api/health (health check endpoint)")
+    try:
+        response = requests.get(f"{API_BASE_URL}/health", timeout=10)
+        print(f"Status Code: {response.status_code}")
+        print(f"Response: {response.json()}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('status') == 'ok' and data.get('db') == 'ok':
+                print("✅ Health endpoint working correctly - MongoDB connection OK")
+                return True
+            else:
+                print(f"❌ Health endpoint returned unexpected response: {data}")
+                return False
+        else:
+            print(f"❌ Health endpoint failed with status {response.status_code}")
+            return False
+    except Exception as e:
+        print(f"❌ Health endpoint test failed: {str(e)}")
+        return False
+
 def test_root_endpoint():
     """Test GET /api/ returns Hello World"""
     print("\n🔍 Testing GET /api/ (root endpoint)")
