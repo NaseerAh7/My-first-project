@@ -174,6 +174,8 @@
 ##     working: "NA"
 ##     file: "/app/frontend/src/pages/Admin.jsx"
 ##     stuck_count: 0
+##   - agent: "main"
+##     message: "Implemented improvements: dedicated /admin page (not linked), cursor pagination for GET /api/contact/recent (now returns {items,next_cursor} and accepts cursor), and Resend email delivery background task on POST /api/contact (graceful no-op until RESEND_API_KEY set). Please test backend + UI."
 ##     priority: "high"
 ##     needs_retesting: true
 ##     status_history:
