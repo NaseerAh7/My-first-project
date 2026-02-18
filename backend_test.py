@@ -273,7 +273,92 @@ def test_recent_contacts_valid_auth():
         print(f"❌ Valid auth test failed: {str(e)}")
         return False
 
-def test_recent_contacts_limit_bounds():
+def test_cursor_pagination():
+    """Test cursor pagination behavior - call once to get next_cursor, then call again with cursor"""
+    print("\n🔍 Testing GET /api/contact/recent (cursor pagination behavior)")
+    
+    if not ADMIN_API_KEY:
+        print("❌ ADMIN_API_KEY not found in backend/.env")
+        return False
+    
+    headers = {"x-admin-key": ADMIN_API_KEY}
+    
+    try:
+        # First call - get initial page with limit=2 to ensure we get a cursor
+        print("Step 1: Getting first page with limit=2")
+        response1 = requests.get(f"{API_BASE_URL}/contact/recent?limit=2", headers=headers, timeout=10)
+        
+        if response1.status_code != 200:
+            print(f"❌ First call failed with status {response1.status_code}")
+            return False
+        
+        data1 = response1.json()
+        print(f"First page response: {data1}")
+        
+        if not isinstance(data1, dict) or 'items' not in data1 or 'next_cursor' not in data1:
+            print("❌ First call didn't return paginated format")
+            return False
+        
+        first_items = data1['items']
+        next_cursor = data1['next_cursor']
+        
+        print(f"First page: {len(first_items)} items, next_cursor: {next_cursor}")
+        
+        # If we have a next_cursor, test pagination
+        if next_cursor:
+            print(f"\nStep 2: Getting next page with cursor={next_cursor}")
+            response2 = requests.get(
+                f"{API_BASE_URL}/contact/recent?cursor={next_cursor}&limit=2", 
+                headers=headers, 
+                timeout=10
+            )
+            
+            if response2.status_code != 200:
+                print(f"❌ Second call failed with status {response2.status_code}")
+                return False
+            
+            data2 = response2.json()
+            print(f"Second page response: {data2}")
+            
+            if not isinstance(data2, dict) or 'items' not in data2 or 'next_cursor' not in data2:
+                print("❌ Second call didn't return paginated format")
+                return False
+            
+            second_items = data2['items']
+            second_cursor = data2['next_cursor']
+            
+            print(f"Second page: {len(second_items)} items, next_cursor: {second_cursor}")
+            
+            # Check for no duplicates between pages
+            first_ids = {item['id'] for item in first_items}
+            second_ids = {item['id'] for item in second_items}
+            
+            if first_ids & second_ids:  # Intersection should be empty
+                print(f"❌ Found duplicate items between pages: {first_ids & second_ids}")
+                return False
+            
+            # Check that second page items are older (created_at should be less than first page)
+            if first_items and second_items:
+                first_latest = first_items[-1]['created_at']  # Last item of first page
+                second_earliest = second_items[0]['created_at']  # First item of second page
+                
+                if first_latest <= second_earliest:
+                    print("❌ Second page items are not older than first page items")
+                    return False
+            
+            print("✅ Cursor pagination working correctly:")
+            print("  - No duplicates between pages")
+            print("  - Second page contains older items")
+            print("  - Cursor advances properly")
+            
+        else:
+            print("✅ No next_cursor (all items fit in first page) - pagination working correctly")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Cursor pagination test failed: {str(e)}")
+        return False
     """Test GET /api/contact/recent limit parameter bounds - NEW PAGINATED FORMAT"""
     print("\n🔍 Testing GET /api/contact/recent (limit bounds - paginated format)")
     
