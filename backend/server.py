@@ -101,6 +101,12 @@ class ContactSubmission(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
+
+class ContactSubmissionPage(BaseModel):
+    items: List[ContactSubmission]
+    next_cursor: Optional[str] = None
+
+
 class ContactSubmissionCreate(BaseModel):
     name: str
     email: EmailStr
