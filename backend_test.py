@@ -430,6 +430,7 @@ def main():
         ("Recent Contacts (No Auth)", test_recent_contacts_no_auth),
         ("Recent Contacts (Wrong Auth)", test_recent_contacts_wrong_auth),
         ("Recent Contacts (Valid Auth)", test_recent_contacts_valid_auth),
+        ("Cursor Pagination Behavior", test_cursor_pagination),
         ("Recent Contacts (Limit Bounds)", test_recent_contacts_limit_bounds),
     ]
     
