@@ -89,8 +89,38 @@ export default function Admin() {
   };
 
   useEffect(() => {
-    AdminKeyStorage.set(adminKey);
-  }, [adminKey]);
+    if (token) AdminAuthStorage.setToken(token);
+  }, [token]);
+
+  const login = async () => {
+    if (!email.trim() || !password) {
+      toast({
+        title: "Missing credentials",
+        description: "Enter email + password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/login", { email, password });
+      const t = res.data?.access_token;
+      if (!t) throw new Error("No token");
+      setToken(t);
+      AdminAuthStorage.setToken(t);
+      toast({ title: "Signed in", description: "Admin access granted." });
+      await loadPage({ reset: true });
+    } catch (e) {
+      toast({
+        title: "Login failed",
+        description: "Invalid credentials.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
