@@ -17,7 +17,7 @@ export default function Footer({ name, socials }) {
           <div>
             <div className="text-sm font-semibold text-zinc-900">{name}</div>
             <div className="mt-1 text-sm text-zinc-600">
-              Built with React + shadcn/ui. (Contact saving is MOCKED locally.)
+              Built with React + shadcn/ui. (Contact submissions stored in MongoDB; email via Resend when configured.)
             </div>
           </div>
 
