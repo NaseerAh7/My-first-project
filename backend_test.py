@@ -274,8 +274,8 @@ def test_recent_contacts_valid_auth():
         return False
 
 def test_recent_contacts_limit_bounds():
-    """Test GET /api/contact/recent limit parameter bounds"""
-    print("\n🔍 Testing GET /api/contact/recent (limit bounds)")
+    """Test GET /api/contact/recent limit parameter bounds - NEW PAGINATED FORMAT"""
+    print("\n🔍 Testing GET /api/contact/recent (limit bounds - paginated format)")
     
     if not ADMIN_API_KEY:
         print("❌ ADMIN_API_KEY not found in backend/.env")
@@ -290,10 +290,15 @@ def test_recent_contacts_limit_bounds():
         print(f"\nLimit=1 - Status: {response.status_code}")
         if response.status_code == 200:
             data = response.json()
-            if len(data) <= 1:
-                print("✅ Limit=1 working correctly")
+            if isinstance(data, dict) and 'items' in data:
+                items = data['items']
+                if len(items) <= 1:
+                    print(f"✅ Limit=1 working correctly (returned {len(items)} items)")
+                else:
+                    print(f"❌ Limit=1 returned {len(items)} items")
+                    all_passed = False
             else:
-                print(f"❌ Limit=1 returned {len(data)} items")
+                print("❌ Expected paginated format {items, next_cursor}")
                 all_passed = False
         else:
             print(f"❌ Limit=1 failed with status {response.status_code}")
@@ -308,10 +313,15 @@ def test_recent_contacts_limit_bounds():
         print(f"\nLimit=999 - Status: {response.status_code}")
         if response.status_code == 200:
             data = response.json()
-            if len(data) <= 100:
-                print(f"✅ Limit=999 capped correctly (returned {len(data)} items)")
+            if isinstance(data, dict) and 'items' in data:
+                items = data['items']
+                if len(items) <= 100:
+                    print(f"✅ Limit=999 capped correctly (returned {len(items)} items)")
+                else:
+                    print(f"❌ Limit=999 returned {len(items)} items (should be max 100)")
+                    all_passed = False
             else:
-                print(f"❌ Limit=999 returned {len(data)} items (should be max 100)")
+                print("❌ Expected paginated format {items, next_cursor}")
                 all_passed = False
         else:
             print(f"❌ Limit=999 failed with status {response.status_code}")
